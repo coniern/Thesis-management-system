@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: thesis-management-system
+  main:
+    allow-circular-references: true
+  
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/thesis_management?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 1800000
+  
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+  
+  # Spring Security 配置
+  security:
+    user:
+      name: admin
+      password: admin
+  
+  # SpringDoc OpenAPI 配置
+  doc:
+    api-docs:
+      path: /api-docs
+    swagger-ui:
+      path: /swagger-ui.html
+
+# 服务器配置
+server:
+  port: 8082
+  servlet:
+    context-path: /api
+
+# 文件上传配置
+file:
+  upload-dir: /tmp/uploads
+
+# MyBatis Plus 配置
+mybatis-plus:
+  mapper-locations: classpath:mybatis/*.xml
+  type-aliases-package: com.thesis.entity
+  global-config:
+    db-config:
+      id-type: AUTO
+
+# JWT 配置
+jwt:
+  secret: your-secret-key-change-in-production
+  expiration: 86400000 # 24小时
+
+# 日志配置
+logging:
+  level:
+    com.thesis: debug
+    org.springframework.security: debug
