@@ -22,11 +22,9 @@
                 {{ formatDate(scope.row.createdAt) }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="280">
+            <el-table-column label="操作" width="120">
               <template #default="scope">
                 <el-button size="small" @click="viewReport(scope.row, 'proposal')">查看</el-button>
-                <el-button v-if="scope.row.status === 'PENDING'" size="small" type="success" @click="approveReport(scope.row.id, 'proposal')">批准</el-button>
-                <el-button v-if="scope.row.status === 'PENDING'" size="small" type="danger" @click="rejectReport(scope.row.id, 'proposal')">拒绝</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -46,11 +44,9 @@
                 {{ formatDate(scope.row.createdAt) }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="280">
+            <el-table-column label="操作" width="120">
               <template #default="scope">
                 <el-button size="small" @click="viewReport(scope.row, 'midterm')">查看</el-button>
-                <el-button v-if="scope.row.status === 'PENDING'" size="small" type="success" @click="approveReport(scope.row.id, 'midterm')">批准</el-button>
-                <el-button v-if="scope.row.status === 'PENDING'" size="small" type="danger" @click="rejectReport(scope.row.id, 'midterm')">拒绝</el-button>
               </template>
             </el-table-column>
           </el-table>

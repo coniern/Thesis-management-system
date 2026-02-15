@@ -33,6 +33,9 @@ public class ProgressCheckService {
     @Autowired
     private PaperService paperService;
 
+    @Autowired
+    private UserService userService;
+
     public boolean isStudentBoundToTeacher(Long studentId) {
         List<Long> teacherIds = teacherStudentSelectionService.getBoundTeachersByStudentId(studentId);
         return !teacherIds.isEmpty();
@@ -169,6 +172,7 @@ public class ProgressCheckService {
         int pendingProposals = 0;
         int pendingMidterms = 0;
         int pendingPapers = 0;
+        List<Map<String, Object>> studentProgressList = new java.util.ArrayList<>();
 
         List<TopicSelection> topics = topicSelectionService.getPendingTopicsByTeacherId(teacherId);
         pendingTopics = topics.size();
@@ -200,15 +204,58 @@ public class ProgressCheckService {
             }
         }
 
-        studentCount = getStudentCountForTeacher(teacherId);
+        java.util.Set<Long> studentIds = new java.util.HashSet<>();
+        for (TopicSelection topic : topics) {
+            studentIds.add(topic.getStudentId());
+        }
+        for (ProposalReport proposal : proposals) {
+            studentIds.add(proposal.getStudentId());
+        }
+        for (MidtermReport midterm : midterms) {
+            studentIds.add(midterm.getStudentId());
+        }
+        for (Paper paper : papers) {
+            studentIds.add(paper.getStudentId());
+        }
+
+        studentCount = studentIds.size();
+
+        for (Long studentId : studentIds) {
+            Map<String, Object> studentProgress = new HashMap<>();
+            Map<String, Object> studentStats = getStudentStats(studentId);
+            
+            studentProgress.put("studentId", studentId);
+            studentProgress.put("progress", studentStats.get("paperProgress"));
+            
+            TopicSelection topic = topicSelectionService.getTopicStatus(studentId);
+            if (topic != null) {
+                studentProgress.put("topicName", topic.getTopicName());
+            } else {
+                studentProgress.put("topicName", "暂无题目");
+            }
+            
+            try {
+                com.thesis.entity.User user = userService.findById(studentId);
+                if (user != null) {
+                    studentProgress.put("studentName", user.getName());
+                } else {
+                    studentProgress.put("studentName", "未知学生");
+                }
+            } catch (Exception e) {
+                studentProgress.put("studentName", "未知学生");
+            }
+            
+            studentProgressList.add(studentProgress);
+        }
 
         stats.put("studentCount", studentCount);
-        stats.put("pendingCount", pendingCount);
+        stats.put("pendingTasks", pendingCount);
         stats.put("completedPapers", completedPapers);
         stats.put("pendingTopics", pendingTopics);
         stats.put("pendingProposals", pendingProposals);
         stats.put("pendingMidterms", pendingMidterms);
         stats.put("pendingPapers", pendingPapers);
+        stats.put("studentProgressList", studentProgressList);
 
         return stats;
     }

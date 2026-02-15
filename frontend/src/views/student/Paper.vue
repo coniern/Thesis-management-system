@@ -227,8 +227,8 @@ export default {
       })
       .then(response => {
         const topicStatus = response.data.topicStatus || response.data
-        if (!topicStatus || !topicStatus.teacherId) {
-          this.$message.error('请先选题并绑定导师')
+        if (!topicStatus) {
+          this.$message.error('请先选题')
           this.submitting = false
           return
         }
@@ -254,7 +254,8 @@ export default {
       })
       .catch(error => {
         console.error('Failed to submit paper:', error)
-        this.$message.error('提交失败，请重试')
+        const errorMsg = error.response?.data?.message || error.response?.data || error.message || '提交失败，请重试'
+        this.$message.error(errorMsg)
       })
       .finally(() => {
         this.submitting = false
