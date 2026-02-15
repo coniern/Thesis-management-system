@@ -3,7 +3,7 @@ import axios from 'axios'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    user: null,
+    user: JSON.parse(localStorage.getItem('user') || 'null'),
     token: localStorage.getItem('token') || '',
     isLoggedIn: !!localStorage.getItem('token'),
     userRole: localStorage.getItem('userRole') || ''
@@ -23,6 +23,7 @@ export const useUserStore = defineStore('user', {
         this.userRole = user.role ? user.role.toUpperCase() : ''
         
         localStorage.setItem('token', token)
+        localStorage.setItem('user', JSON.stringify(user))
         localStorage.setItem('userRole', user.role ? user.role.toUpperCase() : '')
         localStorage.setItem('userId', user.id)
         
@@ -51,6 +52,7 @@ export const useUserStore = defineStore('user', {
       this.userRole = ''
       
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
       localStorage.removeItem('userRole')
       localStorage.removeItem('userId')
     }

@@ -1,74 +1,87 @@
 <template>
   <div class="student-dashboard">
-    <el-card shadow="hover" class="dashboard-card">
+    <div class="welcome-section">
+      <h2 class="welcome-title">欢迎回来，{{ userName }}！</h2>
+      <p class="welcome-subtitle">继续你的毕业论文旅程</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card stat-card-primary">
+        <div class="stat-icon">
+          <el-icon :size="28"><CircleCheck /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ completedTasks }}</div>
+          <div class="stat-label">已完成任务</div>
+        </div>
+      </div>
+      
+      <div class="stat-card stat-card-secondary">
+        <div class="stat-icon">
+          <el-icon :size="28"><Clock /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ pendingTasks }}</div>
+          <div class="stat-label">待提交任务</div>
+        </div>
+      </div>
+      
+      <div class="stat-card stat-card-tertiary">
+        <div class="stat-icon">
+          <el-icon :size="28"><Trophy /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ paperProgress }}%</div>
+          <div class="stat-label">论文进度</div>
+        </div>
+      </div>
+    </div>
+
+    <el-card class="section-card">
       <template #header>
         <div class="card-header">
-          <span>学生工作台</span>
+          <span class="card-title">论文进度</span>
         </div>
       </template>
-      <div class="dashboard-stats">
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-statistic
-              title="已完成任务"
-              :value="completedTasks"
-              :precision="0"
-              value-style="color: #3f8600"
-            />
-          </el-col>
-          <el-col :span="8">
-            <el-statistic
-              title="待提交任务"
-              :value="pendingTasks"
-              :precision="0"
-              value-style="color: #1890ff"
-            />
-          </el-col>
-          <el-col :span="8">
-            <el-statistic
-              title="论文进度"
-              :value="paperProgress"
-              suffix="%"
-              value-style="color: #722ed1"
-            />
-          </el-col>
-        </el-row>
-      </div>
-      <div class="progress-bar-section">
-        <h3 style="margin-bottom: 15px">论文进度</h3>
-        <el-progress :percentage="paperProgress" :color="progressColor" :stroke-width="20" />
+      <div class="progress-section">
+        <el-progress 
+          :percentage="paperProgress" 
+          :color="progressColor" 
+          :stroke-width="24"
+          :show-text="false"
+        />
+        <div class="progress-text">{{ paperProgress }}%</div>
       </div>
     </el-card>
 
-    <el-card shadow="hover" class="dashboard-card">
+    <el-card class="section-card">
       <template #header>
         <div class="card-header">
-          <span>各阶段状态</span>
+          <span class="card-title">各阶段状态</span>
         </div>
       </template>
       <div class="stages-container">
-        <el-row :gutter="10">
-          <el-col :span="24" v-for="(stage, index) in stagesList" :key="index">
-            <div class="stage-item">
-              <div class="stage-icon">
-                <el-icon v-if="stage.status === 'APPROVED' || stage.status === 'RECEIVED' || stage.status === 'SUBMITTED'"><CircleCheck /></el-icon>
-                <el-icon v-else-if="stage.status === 'PENDING'"><Clock /></el-icon>
-                <el-icon v-else><CircleClose /></el-icon>
-              </div>
-              <div class="stage-info">
-                <div class="stage-name">{{ stage.name }}</div>
-                <div class="stage-status" :class="getStatusClass(stage.status)">{{ getStageStatusText(stage.status) }}</div>
-              </div>
+        <div v-for="(stage, index) in stagesList" :key="index" class="stage-item">
+          <div class="stage-left">
+            <div class="stage-icon-wrapper" :class="getStageIconClass(stage.status)">
+              <el-icon :size="20" v-if="stage.status === 'APPROVED' || stage.status === 'RECEIVED' || stage.status === 'SUBMITTED'"><CircleCheck /></el-icon>
+              <el-icon :size="20" v-else-if="stage.status === 'PENDING'"><Clock /></el-icon>
+              <el-icon :size="20" v-else><CircleClose /></el-icon>
             </div>
-          </el-col>
-        </el-row>
+            <div class="stage-info">
+              <div class="stage-name">{{ stage.name }}</div>
+              <div class="stage-status" :class="getStatusClass(stage.status)">{{ getStageStatusText(stage.status) }}</div>
+            </div>
+          </div>
+          <div class="stage-indicator" :class="getStageIndicatorClass(stage.status)"></div>
+        </div>
       </div>
     </el-card>
 
-    <el-card shadow="hover" class="dashboard-card">
+    <el-card class="section-card">
       <template #header>
         <div class="card-header">
-          <span>最近通知</span>
+          <span class="card-title">最近通知</span>
         </div>
       </template>
       <div v-if="notificationStore.notifications.length === 0" class="empty-notifications">
@@ -80,11 +93,12 @@
             v-for="notification in notificationStore.notifications"
             :key="notification.id"
             :timestamp="formatTime(notification.publishTime)"
+            placement="top"
           >
-            <el-card shadow="hover" class="notification-card">
+            <div class="notification-item">
               <h4 class="notification-title">{{ notification.title }}</h4>
               <p class="notification-content">{{ notification.content }}</p>
-            </el-card>
+            </div>
           </el-timeline-item>
         </el-timeline>
       </div>
@@ -93,8 +107,8 @@
 </template>
 
 <script>
-import { useNotificationStore } from '../../stores'
-import { CircleCheck, Clock, CircleClose } from '@element-plus/icons-vue'
+import { useNotificationStore, useUserStore } from '../../stores'
+import { CircleCheck, Clock, CircleClose, Trophy } from '@element-plus/icons-vue'
 import axios from 'axios'
 
 export default {
@@ -102,7 +116,8 @@ export default {
   components: {
     CircleCheck,
     Clock,
-    CircleClose
+    CircleClose,
+    Trophy
   },
   data() {
     return {
@@ -112,10 +127,14 @@ export default {
       stages: {},
       stagesList: [],
       refreshTimer: null,
-      notificationStore: useNotificationStore()
+      notificationStore: useNotificationStore(),
+      userStore: useUserStore()
     }
   },
   computed: {
+    userName() {
+      return this.userStore.user?.name || '同学'
+    },
     progressColor() {
       if (this.paperProgress < 30) return '#f56c6c'
       if (this.paperProgress < 70) return '#e6a23c'
@@ -189,6 +208,16 @@ export default {
       }
       return statusMap[status] || status
     },
+    getStageIconClass(status) {
+      if (status === 'APPROVED' || status === 'RECEIVED' || status === 'SUBMITTED') return 'icon-approved'
+      if (status === 'PENDING') return 'icon-pending'
+      return 'icon-not-started'
+    },
+    getStageIndicatorClass(status) {
+      if (status === 'APPROVED' || status === 'RECEIVED' || status === 'SUBMITTED') return 'indicator-approved'
+      if (status === 'PENDING') return 'indicator-pending'
+      return 'indicator-not-started'
+    },
     fetchNotifications() {
       const userId = localStorage.getItem('userId')
       if (userId) {
@@ -206,11 +235,134 @@ export default {
 
 <style scoped>
 .student-dashboard {
-  padding: 20px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.dashboard-card {
-  margin-bottom: 20px;
+.welcome-section {
+  margin-bottom: 32px;
+  animation: fadeInDown 0.5s ease-out;
+}
+
+.welcome-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.welcome-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.5s ease-out 0.1s both;
+}
+
+.stat-card {
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  opacity: 0.1;
+  transform: translate(30%, -30%);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-card-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.stat-card-primary::before {
+  background: white;
+}
+
+.stat-card-secondary {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  box-shadow: 0 8px 24px rgba(17, 153, 142, 0.3);
+}
+
+.stat-card-secondary::before {
+  background: white;
+}
+
+.stat-card-tertiary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 8px 24px rgba(240, 147, 251, 0.3);
+}
+
+.stat-card-tertiary::before {
+  background: white;
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.section-card {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: fadeInUp 0.5s ease-out 0.2s both;
+}
+
+.section-card:last-child {
+  margin-bottom: 0;
 }
 
 .card-header {
@@ -219,49 +371,77 @@ export default {
   align-items: center;
 }
 
-.dashboard-stats {
-  margin-top: 20px;
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
 }
 
-.progress-bar-section {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #eaeaea;
+.progress-section {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.progress-section .el-progress {
+  margin-bottom: 16px;
+}
+
+.progress-text {
+  font-size: 36px;
+  font-weight: 700;
+  color: #667eea;
 }
 
 .stages-container {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .stage-item {
   display: flex;
   align-items: center;
-  padding: 15px;
-  background: #f5f7fa;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
-.stage-icon {
-  width: 40px;
-  height: 40px;
+.stage-item:hover {
+  background: #f1f5f9;
+  transform: translateX(4px);
+}
+
+.stage-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stage-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 15px;
-  font-size: 24px;
+  flex-shrink: 0;
 }
 
-.stage-icon .el-icon {
-  color: #67c23a;
+.icon-approved {
+  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+  color: white;
 }
 
-.stage-icon .el-icon:nth-child(2) {
-  color: #e6a23c;
+.icon-pending {
+  background: linear-gradient(135deg, #e6a23c 0%, #ebb563 100%);
+  color: white;
 }
 
-.stage-icon .el-icon:nth-child(3) {
-  color: #909399;
+.icon-not-started {
+  background: #e5e7eb;
+  color: #9ca3af;
 }
 
 .stage-info {
@@ -270,12 +450,14 @@ export default {
 
 .stage-name {
   font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
 }
 
 .stage-status {
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .status-approved {
@@ -287,30 +469,104 @@ export default {
 }
 
 .status-not-started {
-  color: #909399;
+  color: #9ca3af;
 }
 
-.notifications-list {
-  margin-top: 20px;
+.stage-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
-.notification-card {
-  width: 100%;
+.indicator-approved {
+  background: #67c23a;
+  box-shadow: 0 0 0 4px rgba(103, 194, 58, 0.1);
 }
 
-.notification-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 10px;
+.indicator-pending {
+  background: #e6a23c;
+  box-shadow: 0 0 0 4px rgba(230, 162, 60, 0.1);
 }
 
-.notification-content {
-  font-size: 14px;
-  color: #666;
-  line-height: 1.5;
+.indicator-not-started {
+  background: #d1d5db;
 }
 
 .empty-notifications {
   padding: 40px 0;
+}
+
+.notifications-list {
+  margin-top: 8px;
+}
+
+.notification-item {
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+  background: #f1f5f9;
+}
+
+.notification-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px;
+}
+
+.notification-content {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .student-dashboard {
+    padding: 16px;
+  }
+  
+  .welcome-title {
+    font-size: 24px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+  }
 }
 </style>
