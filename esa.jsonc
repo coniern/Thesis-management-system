@@ -1,6 +1,6 @@
 {
   "name":"vite-react-template",
-  "entry":"./src/index.js",
+  "entry":"./index.html", // 修正：Vite 入口是 HTML 文件
   "installCommand":"npm install",
   "buildCommand":"npm run build",
   "assets":{
