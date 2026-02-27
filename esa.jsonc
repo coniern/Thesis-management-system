@@ -1,10 +1,9 @@
 {
-  "name":"vite-react-template",
-  "entry":"./index.html", // 修正：Vite 入口是 HTML 文件
-  "installCommand":"npm install",
-  "buildCommand":"npm run build",
-  "assets":{
-    "directory":"./dist",
-    "notFoundStrategy":"singlePageApplication"
+  "name": "thesis-management-system",
+  "installCommand": "cd frontend && npm install",
+  "buildCommand": "cd frontend && npm run build",
+  "assets": {
+    "directory": "./frontend/dist",
+    "notFoundStrategy": "singlePageApplication"
   }
 }
