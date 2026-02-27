@@ -1,10 +1,9 @@
 {
   "name": "thesis-management-system",
-  "rootDirectory": "./frontend",
-  "installCommand": "npm install",
-  "buildCommand": "npm run build",
+  "installCommand": "cd frontend && npm install",
+  "buildCommand": "cd frontend && npm run build",
   "assets": {
-    "directory": "./dist",
+    "directory": "./frontend/dist",
     "notFoundStrategy": "singlePageApplication"
   }
 }
