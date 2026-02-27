@@ -61,6 +61,10 @@
               <el-icon><reading /></el-icon>
               <template #title>论文管理</template>
             </el-menu-item>
+            <el-menu-item index="/teacher/profile">
+              <el-icon><User /></el-icon>
+              <template #title>个人信息</template>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main class="teacher-main">

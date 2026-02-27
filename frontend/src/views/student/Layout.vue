@@ -69,6 +69,10 @@
               <el-icon><reading /></el-icon>
               <template #title>最终论文</template>
             </el-menu-item>
+            <el-menu-item index="/student/profile">
+              <el-icon><User /></el-icon>
+              <template #title>个人信息</template>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main class="student-main">

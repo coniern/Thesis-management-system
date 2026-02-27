@@ -159,6 +159,40 @@ public class SystemController {
         return ResponseEntity.ok(user);
     }
 
+    // 用户更新自己的个人信息
+    @PutMapping("/user/profile")
+    public ResponseEntity<?> updateUserProfile(@RequestBody UserProfileRequest request) {
+        User user = userService.findById(request.getUserId());
+        if (user != null) {
+            user.setName(request.getName());
+            user.setDepartment(request.getDepartment());
+            user.setMajor(request.getMajor());
+            user.setContact(request.getContact());
+            userService.update(user);
+            return ResponseEntity.ok("Profile updated successfully");
+        }
+        return ResponseEntity.badRequest().body("User not found");
+    }
+
+    public static class UserProfileRequest {
+        private Long userId;
+        private String name;
+        private String department;
+        private String major;
+        private String contact;
+
+        public Long getUserId() { return userId; }
+        public void setUserId(Long userId) { this.userId = userId; }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getDepartment() { return department; }
+        public void setDepartment(String department) { this.department = department; }
+        public String getMajor() { return major; }
+        public void setMajor(String major) { this.major = major; }
+        public String getContact() { return contact; }
+        public void setContact(String contact) { this.contact = contact; }
+    }
+
     // 请求体类
     public static class NotificationRequest {
         private String title;

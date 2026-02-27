@@ -81,6 +81,11 @@ const routes = [
         path: 'papers',
         name: 'TeacherPapers',
         component: () => import('../views/teacher/Papers.vue')
+      },
+      {
+        path: 'profile',
+        name: 'TeacherProfile',
+        component: () => import('../views/teacher/Profile.vue')
       }
     ]
   },
@@ -128,6 +133,11 @@ const routes = [
         path: 'paper',
         name: 'StudentPaper',
         component: () => import('../views/student/Paper.vue')
+      },
+      {
+        path: 'profile',
+        name: 'StudentProfile',
+        component: () => import('../views/student/Profile.vue')
       }
     ]
   }

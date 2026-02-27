@@ -170,7 +170,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores'
 import { ElMessage } from 'element-plus'
-import { User, Edit, Lock, OfficeBuilding, Document, School, Teacher } from '@element-plus/icons-vue'
+import { User, Edit, Lock, OfficeBuilding, Document, School, Trophy } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -179,7 +179,7 @@ const loading = ref(false)
 
 const roleOptions = [
   { value: 'STUDENT', label: '学生', icon: School },
-  { value: 'TEACHER', label: '教师', icon: Teacher }
+  { value: 'TEACHER', label: '教师', icon: Trophy }
 ]
 
 const registerForm = reactive({
